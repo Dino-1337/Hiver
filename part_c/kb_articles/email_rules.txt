@@ -1,0 +1,25 @@
+Setting Up Email Rules in Hiver
+
+Email rules help you automatically organize and manage incoming emails.
+
+Creating a Rule:
+1. Navigate to Settings > Rules
+2. Click "New Rule"
+3. Set conditions (subject, sender, keywords)
+4. Choose actions (assign, tag, forward)
+5. Save rule
+
+Rule Conditions:
+- Subject contains/equals
+- From email/domain
+- Body contains keywords
+- Has attachments
+- Time received
+
+Rule Actions:
+- Assign to agent
+- Apply tags
+- Set priority
+- Forward to email
+- Mark as read/unread
+

@@ -1,0 +1,21 @@
+Understanding Hiver's Tagging System
+
+Tags help categorize and organize emails for better management.
+
+Creating Tags:
+- Go to Settings > Tags
+- Click "Create Tag"
+- Enter tag name and color
+- Save tag
+
+Applying Tags:
+- Manual: Select email, click tag icon, choose tag
+- Automatic: Use rules/automations to auto-tag
+- Bulk: Select multiple emails, apply tag
+
+Tag Best Practices:
+- Use consistent naming
+- Create tag hierarchy
+- Limit number of tags
+- Review unused tags regularly
+

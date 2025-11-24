@@ -1,0 +1,29 @@
+How to Configure Automations in Hiver
+
+Automations in Hiver allow you to automatically assign emails, apply tags, and trigger actions based on rules.
+
+Step 1: Access Automation Settings
+- Go to Settings > Automations
+- Click "Create New Automation"
+
+Step 2: Define Trigger Conditions
+- Select trigger: New email, Email assigned, Tag applied, etc.
+- Set conditions: Subject contains, From domain, Tag equals, etc.
+
+Step 3: Configure Actions
+- Assign to agent/team
+- Apply tags
+- Set priority
+- Send notification
+- Create task
+
+Step 4: Test and Activate
+- Use "Test" button to verify rules
+- Save and activate automation
+
+Best Practices:
+- Start with simple rules
+- Test thoroughly before activating
+- Use tags to organize automations
+- Review automation logs regularly
+

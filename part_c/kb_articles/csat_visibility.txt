@@ -1,0 +1,32 @@
+CSAT (Customer Satisfaction) Scores Not Appearing
+
+If CSAT scores are not visible in your dashboard, check the following:
+
+Common Causes:
+1. CSAT surveys not enabled
+   - Go to Settings > CSAT
+   - Ensure "Enable CSAT surveys" is turned on
+
+2. No surveys sent yet
+   - CSAT scores only appear after customers respond
+   - Check if surveys are being sent automatically
+
+3. Date range filter
+   - Check dashboard date range
+   - CSAT scores may be outside selected period
+
+4. Permission issues
+   - Verify user has "View Analytics" permission
+   - Contact admin if access denied
+
+5. Dashboard refresh needed
+   - Try refreshing the page
+   - Clear browser cache if issue persists
+
+Troubleshooting Steps:
+1. Check CSAT settings in admin panel
+2. Verify survey delivery in email logs
+3. Check user permissions
+4. Review dashboard filters
+5. Contact support if issue persists
+

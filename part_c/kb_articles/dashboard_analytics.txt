@@ -1,0 +1,23 @@
+Hiver Dashboard and Analytics
+
+The dashboard provides insights into your team's email support performance.
+
+Key Metrics:
+- Response time
+- Resolution time
+- CSAT scores
+- Email volume
+- Agent performance
+
+Accessing Dashboard:
+- Click "Analytics" in main menu
+- Select date range
+- Filter by team/agent
+- Export reports
+
+Customizing Dashboard:
+- Add/remove widgets
+- Set default date range
+- Save custom views
+- Share with team
+
