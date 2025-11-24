@@ -9,11 +9,9 @@ import ollama
 import os
 from typing import Dict, List
 
-# Configuration
 MODEL_NAME = "mistral:latest"
-# Dataset path - adjust based on where you run the script from
-DATA_PATH = "Z:/AI PROJECTS/Hiver/data/small_dataset.csv"  # We'll select 10 emails from here
-VERSION = "v1"  # Change to "v2" for improved prompt
+DATA_PATH = "Z:/AI PROJECTS/Hiver/data/small_dataset.csv"
+VERSION = "v1"
 
 
 def load_data(filepath: str) -> pd.DataFrame:
@@ -106,7 +104,6 @@ def analyze_sentiment(subject: str, body: str, version: str = "v1") -> Dict:
         
         result = json.loads(content)
         
-        # Normalize sentiment to lowercase
         if 'sentiment' in result:
             result['sentiment'] = result['sentiment'].lower()
         
@@ -127,17 +124,13 @@ def main():
     print(f"Part B: Sentiment Analysis - Prompt {VERSION.upper()}")
     print("=" * 60)
     
-    # Load data
     print("\nLoading data...")
     df = load_data(DATA_PATH)
     print(f"Loaded {len(df)} emails")
     
-    # Select 10 diverse emails for testing
-    # Mix of different customers and tag types
-    test_emails = df.head(10).copy()  # Using first 10 for consistency
+    test_emails = df.head(10).copy()
     print(f"\nSelected {len(test_emails)} emails for sentiment analysis")
     
-    # Analyze sentiment for each email
     print(f"\nAnalyzing sentiment using prompt {VERSION}...")
     results = []
     
@@ -164,14 +157,12 @@ def main():
         
         print(f"  Sentiment: {result.get('sentiment', 'neutral')} (confidence: {result.get('confidence', 0.0):.2f})")
     
-    # Save results
     results_df = pd.DataFrame(results)
     script_dir = os.path.dirname(os.path.abspath(__file__))
     results_path = os.path.join(script_dir, f'results_{VERSION}.csv')
     results_df.to_csv(results_path, index=False)
     print(f"\n\nResults saved to {results_path}")
     
-    # Summary statistics
     sentiment_counts = results_df['sentiment'].value_counts()
     avg_confidence = results_df['confidence'].mean()
     

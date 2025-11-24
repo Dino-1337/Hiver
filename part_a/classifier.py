@@ -10,13 +10,7 @@ import os
 from typing import Dict, List, Tuple
 from collections import defaultdict
 
-# Configuration
-MODEL_NAME = "mistral:latest"  # Using local Mistral 7B via Ollama
-
-# Dataset selection - change this to test different datasets
-# Options:
-#   "Z:/AI PROJECTS/Hiver/data/small_dataset.csv"  # 12 emails (quick test)
-#   "Z:/AI PROJECTS/Hiver/data/large_dataset.csv"  # 60 emails (comprehensive)
+MODEL_NAME = "mistral:latest"
 DATA_PATH = "Z:/AI PROJECTS/Hiver/data/large_dataset.csv"
 
 
@@ -38,15 +32,12 @@ def get_customer_tags(df: pd.DataFrame) -> Dict[str, List[str]]:
 def get_pattern_examples(df: pd.DataFrame, customer_id: str, available_tags: List[str], 
                         exclude_email_id: int = None) -> str:
     """Get pattern examples (few-shot learning) for this customer's tags"""
-    # Get examples from this customer's data
     customer_data = df[df['customer_id'] == customer_id].copy()
     
-    # Exclude current email if provided
     if exclude_email_id is not None:
         customer_data = customer_data[customer_data['email_id'] != exclude_email_id]
     
     examples = []
-    # Get one example per tag if available
     for tag in available_tags:
         tag_examples = customer_data[customer_data['tag'] == tag]
         if len(tag_examples) > 0:
@@ -57,7 +48,7 @@ Body: {example['body']}
 Tag: {example['tag']}""")
     
     if examples:
-        return "\n\n".join(examples[:3])  # Use up to 3 examples
+        return "\n\n".join(examples[:3])
     return ""
 
 
@@ -65,7 +56,6 @@ def get_anti_patterns(available_tags: List[str]) -> str:
     """Get anti-pattern guardrails to prevent common mistakes"""
     guardrails = []
     
-    # Common misleading word patterns
     if 'status_bug' in available_tags and 'access_issue' in available_tags:
         guardrails.append("⚠️ WARNING: Words like 'stuck' or 'pending' with status-related context → usually 'status_bug', not 'access_issue'")
     
@@ -92,7 +82,6 @@ def create_prompt(subject: str, body: str, available_tags: List[str],
     """Create classification prompt with patterns and anti-patterns"""
     tags_str = ", ".join(available_tags)
     
-    # Add patterns (few-shot examples)
     patterns_section = ""
     if df is not None and customer_id is not None:
         examples = get_pattern_examples(df, customer_id, available_tags, exclude_email_id)
@@ -102,7 +91,6 @@ def create_prompt(subject: str, body: str, available_tags: List[str],
 {examples}
 """
     
-    # Add anti-patterns (guardrails)
     anti_patterns_section = ""
     guardrails = get_anti_patterns(available_tags)
     if guardrails:
@@ -144,16 +132,13 @@ def classify_email(subject: str, body: str, available_tags: List[str],
             messages=[{"role": "user", "content": prompt}]
         )
         
-        # Extract JSON from response
         content = response['message']['content'].strip()
         
-        # Try to parse JSON (handle cases where model adds extra text)
         if "```json" in content:
             content = content.split("```json")[1].split("```")[0].strip()
         elif "```" in content:
             content = content.split("```")[1].split("```")[0].strip()
         
-        # Find JSON object in response
         start_idx = content.find("{")
         end_idx = content.rfind("}") + 1
         if start_idx != -1 and end_idx > start_idx:
@@ -165,7 +150,7 @@ def classify_email(subject: str, body: str, available_tags: List[str],
     except Exception as e:
         print(f"Error classifying email: {e}")
         return {
-            "tag": available_tags[0],  # Fallback to first tag
+            "tag": available_tags[0],
             "confidence": 0.0,
             "reasoning": f"Error: {str(e)}"
         }
@@ -195,7 +180,6 @@ def evaluate_predictions(df: pd.DataFrame, predictions: List[Dict]) -> Dict:
     
     accuracy = correct / total if total > 0 else 0.0
     
-    # Per-customer accuracy
     customer_accuracy = defaultdict(lambda: {"correct": 0, "total": 0})
     for idx, (_, row) in enumerate(df.iterrows()):
         cust = row['customer_id']
@@ -225,36 +209,31 @@ def main():
     df = load_data(DATA_PATH)
     print(f"Loaded {len(df)} emails")
     
-    # Get customer-specific tags for isolation
     customer_tags = get_customer_tags(df)
     print("\nCustomer tags (for isolation):")
     for cust, tags in customer_tags.items():
         print(f"  {cust}: {tags}")
     
-    # Classify each email
     print("\n\nClassifying emails...")
     predictions = []
     
     for idx, row in df.iterrows():
         print(f"Processing email {row['email_id']} ({row['customer_id']})...")
         
-        # Get tags for this customer only (isolation)
         available_tags = customer_tags[row['customer_id']]
         
-        # Classify (with patterns and anti-patterns)
         result = classify_email(
             row['subject'],
             row['body'],
             available_tags,
-            df,  # Pass dataframe for pattern examples
-            row['customer_id'],  # Pass customer_id for pattern examples
-            row['email_id']  # Exclude current email from examples
+            df,
+            row['customer_id'],
+            row['email_id']
         )
         
         predictions.append(result)
         print(f"  Predicted: {result.get('tag')} (confidence: {result.get('confidence', 0.0):.2f})")
     
-    # Evaluate
     print("\n\nEvaluating results...")
     evaluation = evaluate_predictions(df, predictions)
     
@@ -266,16 +245,14 @@ def main():
     print(f"\nErrors: {len(evaluation['errors'])}")
     if evaluation['errors']:
         print("\nError Details:")
-        for error in evaluation['errors'][:5]:  # Show first 5
+        for error in evaluation['errors'][:5]:
             print(f"  Email {error['email_id']}: {error['actual']} -> {error['predicted']}")
     
-    # Save results
     results_df = df.copy()
     results_df['predicted_tag'] = [p.get('tag') for p in predictions]
     results_df['confidence'] = [p.get('confidence', 0.0) for p in predictions]
     results_df['reasoning'] = [p.get('reasoning', '') for p in predictions]
     
-    # Save results in the same directory as the script
     script_dir = os.path.dirname(os.path.abspath(__file__))
     results_path = os.path.join(script_dir, 'results.csv')
     results_df.to_csv(results_path, index=False)

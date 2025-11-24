@@ -15,12 +15,10 @@ from langchain_community.vectorstores import FAISS
 import ollama
 import json
 
-# Configuration
-# Get script directory for relative paths
 SCRIPT_DIR = os.path.dirname(os.path.abspath(__file__))
-KB_ARTICLES_DIR = os.path.join(SCRIPT_DIR, "kb_articles")  # Folder with KB articles (relative to script)
-EMBEDDING_MODEL = "sentence-transformers/all-MiniLM-L6-v2"  # Free, lightweight
-LLM_MODEL = "mistral:latest"  # Using local Ollama
+KB_ARTICLES_DIR = os.path.join(SCRIPT_DIR, "kb_articles")
+EMBEDDING_MODEL = "sentence-transformers/all-MiniLM-L6-v2"
+LLM_MODEL = "mistral:latest"
 QUERIES = [
     "How do I configure automations in Hiver?",
     "Why is CSAT not appearing?"
@@ -59,7 +57,7 @@ def create_embeddings():
     print(f"Loading embedding model: {EMBEDDING_MODEL}...")
     embeddings = HuggingFaceEmbeddings(
         model_name=EMBEDDING_MODEL,
-        model_kwargs={'device': 'cpu'}  # Use CPU (free)
+        model_kwargs={'device': 'cpu'}
     )
     return embeddings
 
@@ -88,7 +86,6 @@ def retrieve_relevant_docs(vectorstore: FAISS, query: str, k: int = 3) -> List:
 
 def generate_answer(query: str, context_docs: List) -> str:
     """Generate answer using Ollama LLM with retrieved context"""
-    # Combine context from retrieved documents
     context = "\n\n".join([doc.page_content for doc in context_docs])
     
     prompt = f"""Use the following pieces of context from Hiver's knowledge base to answer the question.
@@ -120,10 +117,8 @@ def calculate_confidence(answer: str, query: str, num_sources: int) -> float:
     if num_sources == 0:
         return 0.3
     
-    # Higher confidence if we have multiple relevant sources
     base_confidence = 0.6
     
-    # Check if answer contains query keywords
     query_words = set(query.lower().split())
     answer_words = set(answer.lower().split())
     keyword_overlap = len(query_words.intersection(answer_words)) / len(query_words) if len(query_words) > 0 else 0
@@ -139,13 +134,9 @@ def query_rag(vectorstore: FAISS, query: str) -> Dict:
     print(f"Query: {query}")
     print(f"{'='*60}")
     
-    # Retrieve relevant documents
     source_docs = retrieve_relevant_docs(vectorstore, query, k=3)
-    
-    # Generate answer
     answer = generate_answer(query, source_docs)
     
-    # Get retrieved articles info
     retrieved_articles = []
     for i, doc in enumerate(source_docs, 1):
         source_path = doc.metadata.get('source', 'Unknown') if hasattr(doc, 'metadata') else 'Unknown'
@@ -156,7 +147,6 @@ def query_rag(vectorstore: FAISS, query: str) -> Dict:
             'content': content[:200] + "..." if len(content) > 200 else content
         })
     
-    # Calculate confidence
     confidence = calculate_confidence(answer, query, len(source_docs))
     
     return {
@@ -174,26 +164,20 @@ def main():
     print("Part C: Mini-RAG for Knowledge Base Answering")
     print("=" * 60)
     
-    # Load KB articles
     documents = load_kb_articles(KB_ARTICLES_DIR)
     
     if len(documents) == 0:
         print("Error: No KB articles found!")
         return
     
-    # Create embeddings
     embeddings = create_embeddings()
-    
-    # Create vector store
     vectorstore = create_vector_store(documents, embeddings)
     
-    # Process queries
     results = []
     for query in QUERIES:
         result = query_rag(vectorstore, query)
         results.append(result)
         
-        # Display results
         print(f"\n📄 Retrieved Articles ({result['num_sources']}):")
         for article in result['retrieved_articles']:
             print(f"\n  {article['rank']}. Source: {article['source']}")
@@ -205,7 +189,6 @@ def main():
         print(f"\n📊 Confidence Score: {result['confidence']:.2%}")
         print("\n" + "-" * 60)
     
-    # Save results
     script_dir = os.path.dirname(os.path.abspath(__file__))
     results_path = os.path.join(script_dir, 'rag_results.json')
     
