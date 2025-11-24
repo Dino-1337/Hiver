@@ -1,8 +1,3 @@
-"""
-Part A: Email Tagging Mini-System
-Uses local Mistral 7B via Ollama for classification
-"""
-
 import pandas as pd
 import json
 import ollama

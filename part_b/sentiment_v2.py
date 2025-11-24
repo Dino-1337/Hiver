@@ -1,8 +1,5 @@
-"""
-Part B: Sentiment Analysis Prompt Evaluation - Version 2 (Improved)
-Uses local Mistral 7B via Ollama for sentiment analysis
-Only the prompt is changed from v1 - everything else is identical
-"""
+# Only the prompt is changed from v1 - everything else is identical
+
 
 import pandas as pd
 import json

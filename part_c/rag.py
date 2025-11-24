@@ -1,11 +1,3 @@
-"""
-Part C: Mini-RAG for Knowledge Base Answering
-Uses LangChain with free/open-source tools:
-- sentence-transformers for embeddings (free, local)
-- FAISS for vector store (free, local)
-- Ollama Mistral 7B for generation (free, local)
-"""
-
 import os
 from typing import List, Dict
 from langchain_community.document_loaders import DirectoryLoader, TextLoader

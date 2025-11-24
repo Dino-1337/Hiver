@@ -1,8 +1,3 @@
-"""
-Part B: Sentiment Analysis Prompt Evaluation
-Uses local Mistral 7B via Ollama for sentiment analysis
-"""
-
 import pandas as pd
 import json
 import ollama
